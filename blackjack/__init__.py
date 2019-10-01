@@ -43,8 +43,8 @@ class State:
             print('Shuffling shoe.')
         self.deal(bet)
         dealer_card = self.inspect_dealers_hand()
-        action = None
-        while action not in ['stand', 'bust']:
+        action = 'bj' if self.player_hand.get_value() == 21 else None
+        while action not in ['stand', 'bust', 'bj']:
             print(f'Dealer is showing: {dealer_card}.')
             player_cards = self.player_hand.get_cards()
             print(f'You have: {player_cards}. (Total={self.player_hand.get_value()})')
@@ -60,6 +60,9 @@ class State:
         if action == 'bust':
             print('You busted!')
             chip_diff = self.player_hand.bet * -1
+        elif action == 'bj':
+            print('Blackjack!')
+            chip_diff = self.player_hand.bet * 1.5
         else:
             result = self.player_hand.check_hand(self.dealer_hand)
             if result > 0:
