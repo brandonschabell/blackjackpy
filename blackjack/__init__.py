@@ -9,15 +9,12 @@ class State:
         self.shoe = Shoe(number_decks=number_decks, percent_to_use=percent_to_use)
         self.player_hand = Hand()
         self.dealer_hand = Hand()
-        self.bet = None
 
     def deal(self, bet):
         if bet > self.player_chips:
             raise Exception(f'Insufficient chips to place bet of {bet} chips.')
         self.player_hand = Hand(bet=bet)
         self.dealer_hand = Hand()
-        self.bet = bet
-        self.player_chips -= bet
         self.player_hand.add_card(self.shoe.deal_card())
         self.dealer_hand.add_card(self.shoe.deal_card())
         self.player_hand.add_card(self.shoe.deal_card())
@@ -62,13 +59,19 @@ class State:
         # Check result
         if action == 'bust':
             print('You busted!')
+            chip_diff = self.player_hand.bet * -1
         else:
             result = self.player_hand.check_hand(self.dealer_hand)
             if result > 0:
                 print('You won!')
-                self.player_chips += (self.player_hand.bet * 2)
+                chip_diff = self.player_hand.bet
             elif result == 0:
                 print('Push.')
-                self.player_chips += self.player_hand.bet
+                chip_diff = 0
             else:
                 print('You lost.')
+                chip_diff = self.player_hand.bet * -1
+
+        self.player_chips += chip_diff
+        return chip_diff
+
